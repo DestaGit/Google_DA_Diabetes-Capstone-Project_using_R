@@ -2,10 +2,9 @@
 title: "Google Data Analytics Capstone Project:Diabets-Case Study using R"
 Date: 10/20/2021
 output:
-  pdf_document: default
-  html_document: default
-  word_document: default
-Author: Desta Ensermu
+    html_document: default
+    
+ Author: Desta Ensermu
 ---
 
 ```{r setup, include=FALSE}
@@ -532,8 +531,6 @@ Further research has to be conducted on inclusive and representative samples to 
 # https://www.cdc.gov/diabetes/basics/index.html
 
 # https://statisticsglobe.com/
-
-# https://www.gmudatamining.com/
 
 # http://www.sthda.com/ 
 
