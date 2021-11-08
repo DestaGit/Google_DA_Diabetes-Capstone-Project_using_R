@@ -1,0 +1,540 @@
+---
+title: "Google Data Analytics Capstone Project:Diabets-Case Study using R"
+Date: 10/20/2021
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+Author: Desta Ensermu
+---
+
+```{r setup, include=FALSE}
+   knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+  
+# Introduction
+
+The work outflow involves Ask-prepare-Process-Analyze-share-Act data analysis phases
+
+# General Overview about diabetes 
+
+Diabetes is a chronic, metabolic disease characterized by elevated levels of blood glucose (or blood sugar), which leads over time to serious damage to the heart, blood vessels, eyes, kidneys, and nerves. The World Health Organization (WHO) has estimated that about 422 million people worldwide have diabetes, the majority living in low-and middle-income countries, and 1.6 million deaths are directly attributed to diabetes each year. According to CDC, more than 34.2 million Americans are living with diabetes and it is the 7th cause of death in the USA.
+
+# Data Description
+
+# Metadata
+
+The database is visible to the public and licensed under CCO: Public domain. It is maintained and owned by UCI Machine Learning Repository. This is a version1 dataset created and last updated on 2016-10-06. 
+
+# Data Collection and preparation
+
+#Source of data
+
+This dataset is originally collected by the National Institute of Diabetes and Digestive and kidney Diseases from 768 adult (at least 21 years old) female Pima Indians inheritance. 
+The dataset for this case study was downloaded from Kaggle at (https://www.kaggle.com/uciml/pima-indians-diabetes-database) in a csv format 
+
+#Dataset Features
+
+The dataset has 768 observations/individual rows and 9 attributes/columns/features.
+There are 8 input/predictor variables that are numerical (quantitative).
+
+1.Pregnancies	        Number of times pregnant
+2.Glucose		          Plasma glucose concentration at 2 hours in an oral glucose tolerance
+                      test
+3.BloodPressure		    Diastolic blood pressure (mm Hg)
+4.SkinThickness     	Triceps skin fold thickness (mm)
+5.Insulin	          	2-Hour serum insulin (mu U/ml)
+6.BMI            		  Body mass index (weight in kg/ (height in meters squared))
+7.DiabetesPedigreeFunction  
+8.Age	               Age (years)
+9.Outcome 	     Test for diabetic status (0 = tested negative, 1 = tested positive)
+
+There is only one response variable ("Outcome") which is qualitative data with boolean data type
+
+# Objectives
+
+  The objective of this case study is:
+  1. To identify factors that contribute to the occurrence of diabetes in females of Pima
+     Indian heritage.
+  2. To determine the relationship between these factors
+  3. to compare these factors among the outcome variable and determine their significance.
+  
+#Selected tools for Analysis
+
+The R programming software of version R-4.0.5 was installed and used for this case- study project.
+
+# Set up the R environment 
+
+The two important file path and working directory R functions used here are getwd() and setwd().
+
+# Import data
+
+```{r diabetes}
+  diabetes <- read.csv("pima-indians-diabetes.csv")
+```
+
+#Install Packages
+
+```{r diabetes}
+install.packages("tidyverse")
+install.packages("here")
+install.packages("janitor")
+install.packages("skimr")
+install.packages("corrr")
+install.packages("corrplot")
+install.packages("magrittr")
+install.packages("dplyr")
+install.packages("ggplot2")
+install.packages("funModeling")
+install.packages("summarytools")
+```
+
+# Load packages
+
+```{r diabetes}
+library(tidyverse)
+library(here)
+library(janitor)
+library(skimr)
+library(corrr)
+library(corrplot)
+library(magrittr)
+library(dplyr)
+library(ggplot2)
+library(summarytools)
+library(funModeling)
+```
+
+# Data inspection and exploration
+
+```{r }
+#View(diabetes) # view spreadsheet like column , fix(diabetes) can also do same
+head(diabetes)  #  display the first 5 rows of the dataset
+```
+```{r}
+tail(diabetes, n = 10)  # displays the last 10 rows of the dataset
+```
+Let's print display the data
+
+```{r }
+    glimpse(diabetes)   # Outcome variable is indicated as int
+```
+# Data Types
+The sapply() function is used to expose incorrect data type conversion in the data set
+
+
+```{r}
+sapply(diabetes, class)
+```
+
+# Convert categorical/factor variable
+
+The result of the glimpse() and sapply() functions indicate that the "Outcome" variable is returned as intiger. So lets convert it to a factor and check it one more time
+ 
+```{r}
+diabetes$Outcome <- factor(diabetes$Outcome)
+glimpse(diabetes)
+```
+
+# Listing the name of the variables
+
+```{r }
+colnames(diabetes)       
+```
+# Working with dimensions(number of rows and columns)
+
+```{r }
+dim(diabetes) 
+```
+# Check for duplicates in the dataset
+the duplicated() function returns True/False boolen result; however, Total duplicates can be obtained by adding sum() function to the duplicated() method as follows:Alternatively the n_distinct() can be used to obtain only distinct dataset rows.
+ 
+ 
+```{r}
+#duplicated(diabetes)# Boolean return T/F
+sum(duplicated(diabetes))  
+n_distinct(diabetes)
+```
+
+# Find Missing Values
+
+Missing values can be checked by using is.na() method which will return a logical value of TRUE or FALSE for each variable
+
+```{r}
+# is.na(diabetes)   # returns TRUE/FALSE results for NA. In this case all are FALSE
+```
+ 
+#Count Missing Values
+
+  Missing values for each variables is counted by adding Sums() to the is.na() method. In this case the data has no NA values at this stage
+```{r}
+colSums((is.na(diabetes)))    
+```
+# View data frame properties and summary statistics
+
+```{r}
+skim_without_charts(diabetes)
+```
+Here we got 1 factor variable and 8 numeric variables.The result of the skim () function shows that there are several zero values in each variables and this indicate a missing data since those feature except pregnancy is unlikely to have a zero value in reality.
+ 
+# Visual exploration of Missing Values ( in this case zero values)
+
+```{r}
+#install.packages("funModeling")
+library(funModeling)
+plot_num(diabetes)
+```
+From the automated plotting, you can see the graphs having high count on zero values as we have already indicated them previously.
+We will use the same plotting techiniques after handling the missing values
+
+
+# Handling Missing Value ( 0 value)
+
+Two Steps: First- replacing 0 with NA 
+           Second- imputing NA with median
+           The result is the total count of NAs for each variable as displayed with skim() function 
+           
+```{r}
+diabetes[diabetes == 0] <- NA  # problem: Outcome variable
+
+```
+
+```{r}
+skim_without_charts(diabetes)
+```
+ The above method replaces all 0 including the factor variable which should not be replaced by NA, So we have to replace it back to 0 for analysis.
+
+```{r}
+ diabetes$Outcome <- factor(diabetes$Outcome)
+ diabetes$Outcome[is.na(diabetes$Outcome)] <- 0
+```
+
+
+```{r}
+skim_without_charts(diabetes)
+```
+
+#Impute with median for each variables
+I prefered this because mean is extremly infuluenced by outliers for skewwed data points.
+
+```{r}
+diabetes$Pregnancies[is.na(diabetes$Pregnancies)] <-median(diabetes$Pregnancies, na.rm = TRUE)
+diabetes$Insulin[is.na(diabetes$Insulin)] <-median(diabetes$Insulin, na.rm = TRUE)
+diabetes$BloodPressure[is.na(diabetes$BloodPressure)] <-median(diabetes$BloodPressure, na.rm = TRUE)
+diabetes$Glucose[is.na(diabetes$Glucose)] <-median(diabetes$Glucose, na.rm = TRUE)
+diabetes$SkinThickness[is.na(diabetes$SkinThickness)] <-median(diabetes$SkinThickness, na.rm = TRUE)
+diabetes$BMI[is.na(diabetes$BMI)] <-median(diabetes$BMI, na.rm = TRUE)
+```
+# check NA after imputing
+```{r}
+skim_without_charts(diabetes)
+```
+
+
+```{r}
+colSums(is.na(diabetes))
+
+```
+
+# Descriptive Statistics
+
+```{r }  
+summary(diabetes)  # summary statistics
+
+```
+
+# Detailed descriptive statistics 
+
+This can be done with descr() method : but we deal with some selected statisitics not indicted on summary statistics and also see whether the numerical variables are skewwed in distribution or not.
+
+ 
+```{r }
+library(funModeling)
+library(summarytools)
+descr(diabetes,                     
+      stats  = c("mean", "sd", "skewness"), # uncomment this line to see all the details of statistics
+      transpose = TRUE,
+      headings  = FALSE)
+```
+
+# Summarize a single categorical variable
+
+ This can be done by using the tabyl() function from the janitor package
+```{r}
+library(janitor)
+tabyl(diabetes, Outcome)
+```
+
+# histogram of numerical variables
+
+Plot_num() is part of the funModelling package that takes a data frame and automatically plots histograms of numeric variables
+
+
+```{r}
+install.packages("funModeling")  # package for freq() and plot_num
+library(funModeling)
+plot_num(diabetes)
+```
+# Visualize the categorical variable : "Outcome"
+```{r}
+ #diabetes$Outcome <- factor(diabetes$Outcome)
+ freq(diabetes$Outcome)
+```
+
+The graph shows that 35% of females were tested positive for diabetes
+
+# Correlation Analysis
+
+It a linear relationship between numeric variables : r value ranges from -1 to +1
+r =  0  No correlation
+r = +1 Perfect positive correlation - direct relationship
+r = -1 Perfect negative correlation - inverse relationshp
+
+# Subsetting numeric variables for correlation analysis 
+
+```{r}
+library(magrittr)
+library(dplyr)
+library(corrr)
+
+diabetes %>% 
+  select(where(is.numeric))
+
+```
+
+# Perform correlation
+
+```{r}
+library(magrittr)
+library(dplyr)
+library(corrr)
+
+diabetes %>% 
+  select(where(is.numeric)) %>% 
+  correlate()
+```
+
+# Visualize correlation in matrix
+
+```{r}
+diabetes_cor_matrix <- diabetes %>% 
+                   select(where(is.numeric)) %>% 
+                   cor()
+diabetes_cor_matrix
+```
+#Validation
+Verify the automated result by Pearson's correlation method . Example BMI~Glucose 
+
+```{r}
+cor1 <- cor.test(diabetes$BMI, diabetes$Glucose, 
+                    method = "pearson")
+cor1
+```
+
+# construct a heat map matrix plot
+
+```{r}
+library(corrplot)
+corrplot(diabetes_cor_matrix)
+```
+
+Age and pregnancies ( r = 0.52230288 ) and SkinThickness and BMI ( r = 0.54320507) are relatively correlated. 
+
+Let's check with scatterplot
+
+```{r}
+ggplot(diabetes, aes(x = BMI,  y = SkinThickness,  color= Outcome)) +
+ geom_point()
+cor(diabetes$BMI, diabetes$SkinThickness)      # output 0.54
+```
+
+
+```{r}
+ ggplot(diabetes, aes(x = BMI,  y = Glucose,  color= Outcome)) +
+  geom_point()
+  #cor(diabetes$BMI, diabetes$Glucose)      # output 0.23
+```
+```{r}
+
+library("ggpubr")
+ggscatter(diabetes, x = "BMI", y = "SkinThickness", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson")
+```
+ This graph shows that there is a positive correlations between BMI and SkinThickness.
+
+
+# Histogram distribution of numeric variables
+
+The functions grid.arrange() and plot-grid() can be used to plot graphs on a single page. First install the packages "gridExtra" and "cowplot" for thier respective functions.
+
+#First let's plot histogram count
+
+```{r}
+install.packages("gridExtra")
+install.packages("cowplot")
+library(gridExtra)
+library(cowplot)
+
+plt1 <- ggplot(diabetes, aes(x = Pregnancies, bandwidth = 5, fill = Outcome,  color= Outcome)) +
+        geom_histogram(position = "identity", alpha = 0.5)
+plt2 <- ggplot(diabetes, aes(x = Glucose, bandwidth = 10, color= Outcome)) +
+       geom_histogram(position = "identity", alpha = 0.5)
+
+plt3 <- ggplot(diabetes, aes(x = BloodPressure, bandwidth = 5, color= Outcome)) +
+      geom_histogram(position = "identity", alpha = 0.5)
+plt4 <- ggplot(diabetes, aes(x = SkinThickness, bandwidth = 5, color= Outcome)) +
+      geom_histogram(position = "identity", alpha = 0.5)
+
+plt5 <- ggplot(diabetes, aes(x = Insulin, bandwidth = 5, color= Outcome)) +
+     geom_histogram(position = "identity", alpha = 0.5)
+
+plt6 <- ggplot(diabetes, aes(x = BMI, bandwidth = 5, color= Outcome)) +
+     geom_histogram(position = "identity", alpha = 0.5)
+
+plt7 <- ggplot(diabetes, aes(x = DiabetesPedigreeFunction, bandwidth = 5, color= Outcome)) +
+     geom_histogram(position = "identity", alpha = 0.5)
+
+plt8 <- ggplot(diabetes, aes(x = Age, bandwidth = 5, color= Outcome)) +
+  geom_histogram(position = "identity", alpha = 0.5)
+
+p <-plot_grid(plt1, plt2, plt3, plt4, plt5, plt6, plt7, plt8, ncol = 2) # can be labeled with letters too.
+
+p + theme(legend.position="none")
+```
+
+# Then visualize percent distribution using histogram
+
+```{r}
+p1 <- ggplot(diabetes, aes(x=Pregnancies)) + ggtitle("Number of times pregnant") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 5, colour="black", fill="white") + ylab("Percentage")
+p2 <- ggplot(diabetes, aes(x=Glucose)) + ggtitle("Glucose") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 5, colour="black", fill="white") + ylab("Percentage")
+p3 <- ggplot(diabetes, aes(x=BloodPressure)) + ggtitle("Blood Pressure") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 5, colour="black", fill="white") + ylab("Percentage")
+p4 <- ggplot(diabetes, aes(x=SkinThickness)) + ggtitle("Skin Thickness") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 5, colour="black", fill="white") + ylab("Percentage")
+p5 <- ggplot(diabetes, aes(x=Insulin)) + ggtitle("Insulin") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 20, colour="black", fill="white") + ylab("Percentage")
+p6 <- ggplot(diabetes, aes(x=BMI)) + ggtitle("Body Mass Index") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth = 5, colour="black", fill="white") + ylab("Percentage")
+p7 <- ggplot(diabetes, aes(x=DiabetesPedigreeFunction)) + ggtitle("Diabetes Pedigree Function") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), colour="black", fill="white") + ylab("Percentage")
+p8 <- ggplot(diabetes, aes(x=Age)) + ggtitle("Age") +
+  geom_histogram(aes(y = 100*(..count..)/sum(..count..)), binwidth= 5, colour="black", fill="white") + ylab("Percentage")
+
+plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, labels = c("A", "B", "C", "D", "E", "F", "G", "H"), ncol= 4)
+
+```
+ 
+ Attention should be given to the data points in Insulin and SkinThickness.
+ 
+ 
+# Boxplot distribution : Correlation bewteen numeric variables and outcome 
+
+#BMI
+
+```{r}
+diabetes_bmi <- ggplot(diabetes, aes( x = Outcome, y= BMI, fill = Outcome)) +
+  geom_boxplot()
+print(diabetes_bmi)
+```
+The BMI median value of diabetic people is higher than the non-diabetic ones.
+
+# Glucose
+```{r}
+diabetes_Glucose <- ggplot(diabetes, aes( x = Outcome, y= Glucose, fill = Outcome)) +
+  geom_boxplot( )
+print(diabetes_Glucose)
+```
+
+ Here the graph shows that there is a high glucose concentration in the blood of diabetic people than the non-diabetic people.
+ 
+
+# Pregnancies
+
+```{r}
+diabetes_Pregnancies <- ggplot(diabetes, aes( x = Outcome, y= Pregnancies, fill = Outcome)) +
+  geom_boxplot()
+print(diabetes_Pregnancies)
+```
+
+# Blood Pressure
+
+```{r}
+diabetes_BloodPressure <- ggplot(diabetes, aes( x = Outcome, y=BloodPressure, fill = Outcome)) +
+  geom_boxplot()
+print(diabetes_BloodPressure)
+```
+BloodPressure for diabetes positve is higher than those non diabetic people
+
+# Insulin
+
+```{r}
+diabetes_Insulin <- ggplot(diabetes, aes( x = Outcome, y= Insulin, fill = Outcome)) +
+  geom_boxplot()
+print(diabetes_Insulin)
+
+```
+ The median Insulin level in the blood for diabetics is higher than non-diabetic people. It looks like there are many outlier data points in this plot and should be considered with cautious.
+
+
+```{r}
+diabetes_Age <- ggplot(diabetes, aes( x = Outcome, y= Age, fill = Outcome)) +
+  geom_boxplot()
+print(diabetes_Age)
+```
+Older people are at higher risk than younger ones for diabetes
+
+```{r}
+diabetes_SkinThickness <- ggplot(diabetes, aes( x = Outcome, y= SkinThickness, fill = Outcome)) +
+  geom_boxplot()
+print(diabetes_SkinThickness)
+```
+
+
+# Key Findings
+  
+  - The sample size is small ( n= 768) and this dataset is not inclusive
+  - Several data points were missed and indicated as 0 value for input variables which
+    unlikely occurs in real sense
+  - The missed data is imputed using median up on which the descriptive statistics is
+    performed then after.
+  - Out of 768 adult females tested for diabetes, 35%(n=268) were tested positive and the
+    rest 65% (n = 500) were negative for the disease.
+    
+  - The avergae BMI in this study is 32.46 which indicates obesity according to CDC
+    guideline.
+  - More pregnancies can be highly associated with higher chance of getting diabetes.
+  - The average median Glucose, Blood Pressure, Insulin is higher in diabetic patients than
+    non diabetic females
+  - As age increases the chance of aquering  diabetes is higher
+  - There were no correlation between most of the input variables. However, Age and
+    Pregnancies variables have some relationship.
+  - The next step to  is to conduct hypothesis testing and compare means of each predictor
+    variables with the outcome and determine the magnitude or strength of association
+
+# Conclusions and Recommendations
+
+The findings in this case-study can be used by healthcare personnel to better understand the determinant factors of diabetes and educate the community how to prevent the disease based on the results.
+
+Further research has to be conducted on inclusive and representative samples to avoid bias in concluding the findings to the entire population.
+
+
+
+# References
+
+# https://www.who.int/health-topics/diabetes#tab=tab_1
+
+# https://www.cdc.gov/diabetes/basics/index.html
+
+# https://statisticsglobe.com/
+
+# https://www.gmudatamining.com/
+
+# http://www.sthda.com/ 
+
+
