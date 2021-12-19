@@ -438,7 +438,10 @@ plot_grid(p1, p2, p3, p4, p5, p6, p7, p8, labels = c("A", "B", "C", "D", "E", "F
 
 ```{r}
 diabetes_bmi <- ggplot(diabetes, aes( x = Outcome, y= BMI, fill = Outcome)) +
-  geom_boxplot()
+  geom_boxplot() +
+  xlab("Diabetes State") + ylab("Body Mass Index") +
+  ggtitle("Boxplots of Body Mass Index by Diabetes Condition")
+
 print(diabetes_bmi)
 ```
 The BMI median value of diabetic people is higher than the non-diabetic ones.
@@ -446,7 +449,9 @@ The BMI median value of diabetic people is higher than the non-diabetic ones.
 # Glucose
 ```{r}
 diabetes_Glucose <- ggplot(diabetes, aes( x = Outcome, y= Glucose, fill = Outcome)) +
-  geom_boxplot( )
+ geom_boxplot() +
+  xlab("Diabetes State") + ylab("Blood Glucose level") +
+  ggtitle("Boxplots of Blood Glucose Concentration by Diabetes Condition")
 print(diabetes_Glucose)
 ```
 
@@ -457,7 +462,9 @@ print(diabetes_Glucose)
 
 ```{r}
 diabetes_Pregnancies <- ggplot(diabetes, aes( x = Outcome, y= Pregnancies, fill = Outcome)) +
-  geom_boxplot()
+  geom_boxplot() +
+  xlab("Diabetes State") + ylab("Pregnancies") +
+  ggtitle("Boxplots of number of pregnancies by Diabetes Condition")
 print(diabetes_Pregnancies)
 ```
 
@@ -465,7 +472,9 @@ print(diabetes_Pregnancies)
 
 ```{r}
 diabetes_BloodPressure <- ggplot(diabetes, aes( x = Outcome, y=BloodPressure, fill = Outcome)) +
-  geom_boxplot()
+ geom_boxplot() +
+  xlab("Diabetes State") + ylab("Blood Pressure") +
+  ggtitle("Boxplots of Blood Pressure by Diabetes Condition")
 print(diabetes_BloodPressure)
 ```
 BloodPressure for diabetes positve is higher than those non diabetic people
@@ -474,7 +483,9 @@ BloodPressure for diabetes positve is higher than those non diabetic people
 
 ```{r}
 diabetes_Insulin <- ggplot(diabetes, aes( x = Outcome, y= Insulin, fill = Outcome)) +
-  geom_boxplot()
+ geom_boxplot() +
+  xlab("Diabetes State") + ylab("Insulin level") +
+  ggtitle("Boxplots of Insulin level by Diabetes Condition")
 print(diabetes_Insulin)
 
 ```
@@ -483,14 +494,18 @@ print(diabetes_Insulin)
 
 ```{r}
 diabetes_Age <- ggplot(diabetes, aes( x = Outcome, y= Age, fill = Outcome)) +
-  geom_boxplot()
+  geom_boxplot() +
+  xlab("Diabetes State") + ylab("Age") +
+  ggtitle("Boxplots of Age by Diabetes Condition")
 print(diabetes_Age)
 ```
 Older people are at higher risk than younger ones for diabetes
 
 ```{r}
 diabetes_SkinThickness <- ggplot(diabetes, aes( x = Outcome, y= SkinThickness, fill = Outcome)) +
-  geom_boxplot()
+ geom_boxplot() +
+  xlab("Diabetes State") + ylab("Skin Thickness") +
+  ggtitle("Boxplots of Skin Thickness by Diabetes Condition")
 print(diabetes_SkinThickness)
 ```
 
