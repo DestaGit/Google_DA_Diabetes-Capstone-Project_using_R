@@ -1,7 +1,7 @@
 # Google_DA_Diabetes-Capstone-Project_using_R
 
 
-itle: "Google Data Analytics Capstone Project:Diabets-Case Study using R"
+Title: "Google Data Analytics Capstone Project:Diabets-Case Study using R"
 Date: 10/20/2021
 Author: Desta Ensermu
 output:
@@ -23,6 +23,7 @@ The dataset for this case study was downloaded from Kaggle at (https://www.kaggl
 #Dataset Features
 The dataset has 768 observations/individual rows and 9 attributes/columns/features.
 There are 8 input/predictor variables that are numerical (quantitative).
+
 1.Pregnancies	        Number of times pregnant
 2.Glucose		          Plasma glucose concentration at 2 hours in an oral glucose tolerance
                       test
@@ -42,4 +43,5 @@ There is only one response variable ("Outcome") which is qualitative data with b
   3. to compare these factors among the outcome variable and determine their significance.
   
 #Selected tools for Analysis
+
 The R programming software of version R-4.0.5 was installed and used for this case- study project.
